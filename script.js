@@ -127,15 +127,14 @@ const tick = () =>
 
     // Update particles
     //particles.rotation.y = elapsedTime * 0.01
-    let offset = 0.001
 
     for (let i = 0; i < count; i++)
     {
         
         const i3 = i * 3
-        particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(elapsedTime + offset)
+        const x = particlesGeometry.attributes.position.array[i3]
+        particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(Math.sin(Math.sin((elapsedTime + x))*2)*2)
 
-        offset += 0.001
     }
 
     particlesGeometry.attributes.position.needsUpdate = true
