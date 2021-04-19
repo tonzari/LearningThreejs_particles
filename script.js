@@ -2,6 +2,7 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
+import { AlphaFormat } from 'three'
 
 /**
  * Base
@@ -19,29 +20,52 @@ const scene = new THREE.Scene()
  * Textures
  */
 const textureLoader = new THREE.TextureLoader()
+const particleTexture = textureLoader.load('/textures/particles/1.png')
 
 /**
  * Particles
  */
 // Geometry
 const particlesGeometry = new THREE.BufferGeometry()
-const count = 500
+const count = 20000
 const positions = new Float32Array(count * 3)
+const colors = new Float32Array(count * 3)
 
 for(let i = 0; i < count * 3; i++)
 {
     positions[i] = (Math.random() - 0.5) * 10
+    colors[i] = Math.random()
 }
 
 particlesGeometry.setAttribute(
     'position',
-    new THREE.BufferAttribute(positions, 3)
+    new THREE.BufferAttribute(positions, 3),
 )
+
+particlesGeometry.setAttribute(
+    'color',
+    new THREE.BufferAttribute(colors, 3)
+)
+
+const cubeGeometry = new THREE.BoxGeometry(1,1)
+const cubeMaterial = new THREE.MeshBasicMaterial({
+    color: 0xFF0000
+})
+const cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+scene.add(cube)
 
 // Material
 const particlesMaterial = new THREE.PointsMaterial({
-    size: 0.02,
-    sizeAttenuation: true
+    size: 0.1,
+    sizeAttenuation: true,
+    alphaMap: particleTexture,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    vertexColors: colors
+    // depthTest: false OR
+    // use alphatest to help with the render queue 
+
 })
 //Points
 const particles = new THREE.Points(particlesGeometry, particlesMaterial)
@@ -100,6 +124,21 @@ const clock = new THREE.Clock()
 const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
+
+    // Update particles
+    //particles.rotation.y = elapsedTime * 0.01
+    let offset = 0.001
+
+    for (let i = 0; i < count; i++)
+    {
+        
+        const i3 = i * 3
+        particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(elapsedTime + offset)
+
+        offset += 0.001
+    }
+
+    particlesGeometry.attributes.position.needsUpdate = true
 
     // Update controls
     controls.update()
