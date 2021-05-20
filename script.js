@@ -27,7 +27,7 @@ const particleTexture = textureLoader.load('/textures/particles/1.png')
  */
 // Geometry
 const particlesGeometry = new THREE.BufferGeometry()
-const count = 20000
+const count = 50000
 const positions = new Float32Array(count * 3)
 const colors = new Float32Array(count * 3)
 
@@ -47,12 +47,12 @@ particlesGeometry.setAttribute(
     new THREE.BufferAttribute(colors, 3)
 )
 
-const cubeGeometry = new THREE.BoxGeometry(1,1)
-const cubeMaterial = new THREE.MeshBasicMaterial({
-    color: 0xFF0000
-})
-const cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
-scene.add(cube)
+// const cubeGeometry = new THREE.BoxGeometry(1,1)
+// const cubeMaterial = new THREE.MeshBasicMaterial({
+//     color: 0xFF0000
+// })
+// const cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+// scene.add(cube)
 
 // Material
 const particlesMaterial = new THREE.PointsMaterial({
@@ -133,8 +133,13 @@ const tick = () =>
         
         const i3 = i * 3
         const x = particlesGeometry.attributes.position.array[i3]
-        particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(Math.sin(Math.sin((elapsedTime + x))*2)*2)
-
+        const z = particlesGeometry.attributes.position.array[i3 + 2]
+        // particlesGeometry.attributes.position.array[i3 + 1] = Math.cos(Math.sin(Math.cos((elapsedTime + x + z))*2)*z) + Math.cos((elapsedTime + x + z))
+        // particlesGeometry.attributes.position.array[i3 + 1] = Math.cos(Math.sin(Math.cos((elapsedTime + x + z))*2)*z)
+        // particlesGeometry.attributes.position.array[i3 + 1] = Math.sin((elapsedTime + x + z)) / x
+         particlesGeometry.attributes.position.array[i3 + 1] = Math.cos( Math.cos((elapsedTime + x)) / z ) + Math.sin( Math.cos((elapsedTime + z)) / x )
+        // particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(Math.sin(Math.cos((elapsedTime + x) / 100))/z) - Math.sin(elapsedTime + Math.sin(Math.sin(x))/z) * (Math.sin(Math.sin(Math.cos((elapsedTime + x))*z)/x) - Math.sin(elapsedTime + Math.sin(Math.sin(x))/z))
+        //particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(Math.sin((Math.sin(Math.sin(elapsedTime + x)*4) - Math.sin(elapsedTime + z) * 2) / 5 ) / 3)
     }
 
     particlesGeometry.attributes.position.needsUpdate = true
